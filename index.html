@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreePorn</title>
+    <link rel="icon" href="Picture2.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="logo">
+        <a href="index.html#" class="brand">Free<strong class="brazz">Porn</strong></a>
+    </div>
+    <h1></h1>
+    <div class="navigation">
+        <a href="index.html#" id="home-link">Home</a>
+        <a href="#" id="categories-link">Categories</a>
+        <a href="#" id="tags-link">Tags</a>
+        <a href="#" id="asian-link">Asian</a>
+        <a href="#" id="someflux-tv-link">someFlux TV</a>
+        <a href="#" id="shower-link">shower</a>
+        <a href="#" id="partners-link">Our Partners</a>
+        <a href="#" id="best-link">the best</a>
+
+    </div>
+    <input type="text" id="search-input" placeholder="Search for videos..." class="search-bar">
+    <img class="tongue"     src="/Picture2.png">
+    <div class="video-grid" id="video-container"></div>
+    <div class="pagination" id="pagination"></div>
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentPage = 1;
+            const videosPerPage = 64;
+            let allVideos = [];
+    
+            function getStoredVideoData() {
+                const storedData = localStorage.getItem('videoData');
+                return storedData ? JSON.parse(storedData) : null;
+            }
+    
+            function saveVideoData(videoData) {
+                localStorage.setItem('videoData', JSON.stringify(videoData));
+            }
+    
+            function getRandomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+    
+            async function loadVideos(filename = 'articles.json') {
+                try {
+                    console.log(`Loading videos from ${filename}...`);
+                    const response = await fetch(filename);
+                    if (!response.ok) throw new Error("Failed to load video data");
+                    allVideos = await response.json();
+    
+                    const storedData = getStoredVideoData();
+                    if (storedData) {
+                        allVideos = allVideos.map((video, index) => ({
+                            ...video,
+                            views: storedData[index]?.views || getRandomNumber(4000, 20000),
+                            likes: storedData[index]?.likes || getRandomNumber(50, 1000),
+                        }));
+                    } else {
+                        const videoData = allVideos.map(video => ({
+                            views: getRandomNumber(4000, 20000),
+                            likes: getRandomNumber(50, 1000),
+                        }));
+                        saveVideoData(videoData);
+                        allVideos = allVideos.map((video, index) => ({
+                            ...video,
+                            views: videoData[index].views,
+                            likes: videoData[index].likes,
+                        }));
+                    }
+    
+                    displayVideos();
+                    setupPagination();
+                } catch (error) {
+                    console.error("Error loading videos:", error);
+                }
+            }
+    
+            function displayVideos(filteredVideos = allVideos) {
+                const container = document.getElementById('video-container');
+                container.innerHTML = '';
+    
+                const startIndex = (currentPage - 1) * videosPerPage;
+                const endIndex = currentPage * videosPerPage;
+                const videosToShow = filteredVideos.slice(startIndex, endIndex);
+    
+                videosToShow.forEach(video => {
+                    const videoCard = document.createElement('div');
+                    videoCard.className = "video-card";
+                    videoCard.innerHTML = `
+                        <a href="video.html?id=${video.id}">
+                            <div class="video-image-container">
+                                <img src="${video.image_url}" alt="${video.title}">
+                                <span class="duration">${video.duration}</span>
+                            </div>
+                            <h2>${video.title}</h2>
+                            <p>${video.views.toLocaleString()} views • ${video.likes} likes</p>
+                        </a>
+                    `;
+                    container.appendChild(videoCard);
+                });
+            }
+    
+            function setupPagination() {
+                const container = document.getElementById('pagination');
+                container.innerHTML = '';
+    
+                const totalPages = Math.ceil(allVideos.length / videosPerPage);
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.textContent = i;
+                    pageButton.addEventListener('click', () => {
+                        if (currentPage === i) return;
+                        currentPage = i;
+                        localStorage.setItem('currentPage', currentPage);
+                        displayVideos();
+                        setupPagination();
+                        // Scroll to the top of the page when changing pages
+                    window.scrollTo(0, 0);
+                    });
+                    if (currentPage === i) {
+                        pageButton.textContent = '...';
+                    }
+                    container.appendChild(pageButton);
+                }
+            }
+    
+            function filterVideos(query) {
+                const filtered = allVideos.filter(video => video.title.toLowerCase().includes(query.toLowerCase()));
+                currentPage = 1;
+                displayVideos(filtered);
+                setupPagination();
+            }
+    
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                filterVideos(e.target.value);
+            });
+            
+            // Fix: Use the correct ID for the "Categories" button
+            const categoriesButton = document.getElementById('categories-link');
+            if (categoriesButton) {
+                categoriesButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("Categories clicked! Switching to articles1.json...");
+                    loadVideos('articles1.json');
+                });
+            } else {
+                console.error("Categories button not found.");
+            }
+            // Event listener for "Tags" button
+            const tagsButton = document.getElementById('tags-link');
+            if (tagsButton) {
+                tagsButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("Tags clicked! Switching to articles2.json...");
+                    loadVideos('articles2.json');
+                });
+            } else {
+                console.error("Tags button not found.");
+            }
+
+            // Event listener for "Asian" button
+            const asianButton = document.getElementById('asian-link');
+            if (asianButton) {
+                asianButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("Asian clicked! Switching to articles3.json...");
+                    loadVideos('articles3.json');
+                });
+            } else {
+                console.error("Asian button not found.");
+            }
+
+            // Event listener for "someFlux TV" button
+            const someFluxTVButton = document.getElementById('someflux-tv-link');
+            if (someFluxTVButton) {
+                someFluxTVButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("someFlux TV clicked! Switching to articles4.json...");
+                    loadVideos('articles4.json');
+                });
+            } else {
+                console.error("someFlux TV button not found.");
+            }
+
+            // Event listener for "Shower" button
+            const showerButton = document.getElementById('shower-link');
+            if (showerButton) {
+                showerButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("Shower clicked! Switching to articles5.json...");
+                    loadVideos('articles5.json');
+                });
+            } else {
+                console.error("Shower button not found.");
+            }
+
+            // Event listener for "Our Partners" button
+            const partnersButton = document.getElementById('partners-link');
+            if (partnersButton) {
+                partnersButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("Our Partners clicked! Switching to articles6.json...");
+                    loadVideos('articles6.json');
+                });
+            } else {
+                console.error("Our Partners button not found.");
+            }
+
+            // Event listener for "The Best" button
+            const bestButton = document.getElementById('best-link');
+            if (bestButton) {
+                bestButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log("The Best clicked! Switching to articles7.json...");
+                    loadVideos('articles7.json');
+                });
+            } else {
+                console.error("The Best button not found.");
+            }
+    
+            loadVideos();
+        });
+        document.getElementById('home-link').addEventListener('click', (e) => {
+            e.preventDefault();  // Prevent default behavior of the link
+
+    // Reload the page or reset the video container
+            location.reload();  // This will reload the page, essentially going back to the first page
+        });
+    </script>
+    
+        
+</body>
+</html>
