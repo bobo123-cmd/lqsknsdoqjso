@@ -240,6 +240,17 @@
 <ins id="1082284" data-width="300" data-height="250"></ins>
 <script type="text/javascript" data-cfasync="false" async>(adsbyjuicy = window.adsbyjuicy || []).push({'adzone':1082284});</script>
 <!--JuicyAds END-->
+<script>
+  (function () {
+    const analyticsUrl = 'https://v.vercel-analytics.com/v1/invoke';
+    const data = {
+      url: window.location.href,
+      referrer: document.referrer,
+      timestamp: new Date().toISOString(),
+    };
+    navigator.sendBeacon(analyticsUrl, JSON.stringify(data));
+  })();
+</script>
 
     
         
