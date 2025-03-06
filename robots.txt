@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /login/
+Allow: /
+
+Sitemap: https://freeporn.vercel.app/sitemap.xml
