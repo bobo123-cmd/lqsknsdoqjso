@@ -546,7 +546,7 @@ footer a:hover {
 }
 .custom-banner-1 {
     position: absolute;
-    bottom: -6200px;
+    bottom: -4700px;
     left: 0px;
     z-index: 9999;
     padding-bottom: 10px;
@@ -556,7 +556,7 @@ footer a:hover {
     }
 .custom-banner-2 {
     position: absolute;
-    bottom: -6200px;
+    bottom: -4700px;
     right: 20px;
     z-index: 9999;
     padding: 10px;
@@ -573,8 +573,8 @@ footer a:hover {
     }
 .custom-banner-4 {
     position: relative;
-    bottom: -6400px;
-    right: -330px;
+    bottom: -4900px;
+    right: -500px;
 
 }
 /* ads home page end */
